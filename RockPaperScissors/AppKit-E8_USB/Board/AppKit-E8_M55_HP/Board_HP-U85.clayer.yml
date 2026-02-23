@@ -101,7 +101,8 @@ layer:
         - file: main.h
         - file: AppKit-E8-AIML.h
         - file: ethos_setup.c
-        - file: retarget_stdio.c
+#       - file: retarget_stdio.c
+        - file: ../../RTT/Retarget/stdio_rtt.c
         - file: ext_init.c
         - file: profiler.c
         - file: profiler.h

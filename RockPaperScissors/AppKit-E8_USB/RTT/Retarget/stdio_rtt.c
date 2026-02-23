@@ -24,6 +24,7 @@
 #ifdef   CMSIS_target_header
 #include CMSIS_target_header
 #endif
+#include "cmsis_os2.h"
 
 #include "SEGGER_RTT.h"
 
@@ -40,7 +41,7 @@ extern int stdin_getchar  (void);
 */
 int stdio_init (void) {
 
-//SEGGER_RTT_Init();  // Not explicitly required, as RTT is initialized implicitly on first use
+  SEGGER_RTT_Init();  // Not explicitly required, as RTT is initialized implicitly on first use
 
   return 0;
 }
@@ -89,6 +90,9 @@ int stdout_putchar (int ch) {
 int stdin_getchar (void) {
   int ret;
 
+  while (SEGGER_RTT_HasKey() == 0) {
+    osDelay(10U);
+  }
   ret = SEGGER_RTT_WaitKey();
 
   return ret;
