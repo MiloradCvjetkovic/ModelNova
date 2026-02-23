@@ -30,10 +30,15 @@ solution:
       target-set:
         - set:
           debugger:
-            name: J-Link Server
-            clock: 4000000
+            name: ULINKplus@pyOCD
+            clock: 10000000
             protocol: swd
             start-pname: M55_HP
+            rtt:
+              - pname: M55_HP
+                channel:
+                  - number: 1
+                    mode: systemview
           images:
             - project-context: AlgorithmTest.DebugRec
 
