@@ -854,9 +854,9 @@ void print_outputs(RunnerContext& ctx) {
             softmax(logits, probs, numel);
             predicted_idx = argmax(probs, numel, &confidence);
 
-            printf("\nPost-processed output:\n");
             if (model_config == VEHICLE_MODEL) {
                 const char* color = get_log_color(predicted_idx);
+                printf("\nPost-processed output:\n");
                 printf("Predicted class : %s%s%s\n", color,
                        VEHICLE_CLASS_NAMES[predicted_idx], COLOR_RESET);
                 printf("Confidence      : %.2f %%\n", confidence * PERCENT_SCALE);
@@ -880,6 +880,7 @@ void print_outputs(RunnerContext& ctx) {
 
             } else if (model_config == BANANA_RIPENESS_MODEL) {
                 const char* color = get_log_color(predicted_idx);
+                printf("\nPost-processed output:\n");
                 printf("Predicted class : %s%s%s\n", color,
                        BANANA_CLASS_NAMES[predicted_idx], COLOR_RESET);
                 printf("Confidence      : %.2f %%\n", confidence * PERCENT_SCALE);
@@ -895,6 +896,7 @@ void print_outputs(RunnerContext& ctx) {
                 output_label.confidence = conf_score;
             } else if (model_config == TOOL_MODEL) {
                 const char* color = get_log_color(predicted_idx);
+                printf("\nPost-processed output:\n");
                 printf("Predicted class : %s%s%s\n", color,
                        TOOL_CLASS_NAMES[predicted_idx], COLOR_RESET);
                 printf("Confidence      : %.2f %%\n", confidence * PERCENT_SCALE);
@@ -910,9 +912,13 @@ void print_outputs(RunnerContext& ctx) {
                 output_label.confidence = conf_score;
             } else if (model_config == RPS_MODEL) {
                 const char* color = get_log_color(predicted_idx);
-                printf("Predicted class : %s%s%s\n", color,
-                       RPS_CLASS_NAMES[predicted_idx], COLOR_RESET);
-                printf("Confidence      : %.2f %%\n", confidence * PERCENT_SCALE);
+                if (predicted_idx < (NUM_CLASSES - 1)) {
+                    // To reduce clutter, print predicted class and confidence only if predicted class is different then UNKNOWN
+                    printf("\nPost-processed output:\n");
+                    printf("Predicted class : %s%s%s\n", color,
+                           RPS_CLASS_NAMES[predicted_idx], COLOR_RESET);
+                    printf("Confidence      : %.2f %%\n", confidence * PERCENT_SCALE);
+                }
                 conf_score = confidence * PERCENT_SCALE;
                 conf_int = (int)(confidence * PERCENT_SCALE);
                 strncpy(label_name, RPS_CLASS_NAMES[predicted_idx],
@@ -925,6 +931,7 @@ void print_outputs(RunnerContext& ctx) {
                     '\0';
                 output_label.confidence = conf_score;
             } else {
+                printf("\nPost-processed output:\n");
                 printf("Invalid classes\n");
             }
         } else {
