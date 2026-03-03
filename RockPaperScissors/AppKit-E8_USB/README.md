@@ -4,7 +4,7 @@ This application demonstrates how to test DSP and ML algorithms using the SDS fr
 It lets you record and play back real-world data streams on physical hardware, feeding
 them to your algorithm for testing. The data streams are stored in SDS data files.
 
-## Pre-Requisite
+## Prerequisites
 
 To run this example:
 
@@ -19,8 +19,7 @@ To run this example:
 
 ## Alif AppKit-E8-AIML
 
-The Alif **AppKit-E8-AIML** features a dual-core Cortex-M55 each paired with an Ethos-U55 NPU. An Ethos-U85 NPU is also
-available on the device.
+The [Alif **AppKit-E8-AIML**](https://www.keil.arm.com/boards/alif-semiconductor-appkit-e8-aiml-a-b437af7/features/) features a dual-core Cortex-M55 each paired with an Ethos-U55 NPU. An Ethos-U85 NPU is also available on the device.
 
 Before using this SDS example on the board, it is required to program the ATOC of the device using the Alif SETOOLS.
 Refer to the section [Usage](https://www.keil.arm.com/packs/ensemble-alifsemiconductor/overview/) in the overview page
@@ -42,8 +41,8 @@ verifies a user algorithm with recording and playback of SDS data files.
 
 ## Layer Type: Board and Layer Type: SDSIO
 
-The board layer implements the Hardware Abstraction Layer (HAL) layer.
-The SDSIO layer implements communication layer that communicates with SDSIO-Server.
+The board layer implements the Hardware Abstraction Layer (HAL).
+The SDSIO layer implements the communication layer that communicates with SDSIO-Server.
 
 - `Board/AppKit-E8_M55_HP/Board_HP.clayer.yml` provides board/device drivers
 - `sdsio/usb/sdsio_usb.clayer.yml` provides the **USB Interface** for SDS I/O communication interface
@@ -61,7 +60,7 @@ The SDSIO layer implements communication layer that communicates with SDSIO-Serv
 
 > Note:
 >
-> Only difference between `Debug` and `Release` targets is compiler optimization level and debug information.
+> The only difference between `Debug` and `Release` targets is compiler optimization level and debug information.
 
 ## AlgorithmTest Project
 
@@ -159,7 +158,11 @@ SDS recording (#0) stopped
 ====
 ```
 
+<<<<<<< HEAD
 Each run records two files: `ML_In.<n>.sds` and `ML_Out.<0>.sds` in the directory
+=======
+Each run records two files: `DataInput.<n>.sds` and `DataOutput.<n>.sds` in the directory
+>>>>>>> 6b3d5e3 (README reworked)
 where SDSIO-Server was started. `<n>` is a sequential number.
 
 #### Check SDS Files
@@ -195,8 +198,13 @@ To execute the **playback** test, follow the steps below:
    (STDIO).
 7. Connect the MCU USB (J2) of the AppKit-E8-AIML to the PC running SDSIO-Server.
 8. Reset the board with RESET (SW1) button and observe the application output (STDIO).
+<<<<<<< HEAD
 9.  Press a joystick (SW2) on the board to start playback of `ML_In` and recording of `ML_Out`.
 10. Wait for playback to finish, it will finish automatically when all data from `ML_In.0.sds` SDS file was played
+=======
+9. Press the joystick (SW2) on the board to start playback of `DataInput` and recording of `DataOutput`.
+10. Wait for playback to finish; it finishes automatically when all data from the `DataInput.0.sds` SDS file was played
+>>>>>>> 6b3d5e3 (README reworked)
     back.
 
 The stream `ML_In.<n>.sds` is read back and the algorithm processes this data. The stream `ML_Out.<m>.sds` is
@@ -243,5 +251,5 @@ Closed:   ML_Out (.\ML_Out.0.sds).
 - Copies detection results to output buffer for SDS recording
 - Displays frames on LCD with overlaid boxes using CMSIS vStream driver
 
-One can use the **AlgorithmTest** project in a same way as **DataTest**. In VS Code, open
+One can use the **AlgorithmTest** project in the same way as **DataTest**. In VS Code, open
 CMSIS view and use **Manage Solution Settings** to select **AlgorithmTest** as Active Project.
