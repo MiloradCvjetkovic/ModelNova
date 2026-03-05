@@ -15,7 +15,7 @@ solution:
   # Refer to https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/ for more information
 
   packs:
-    - pack: ARM::SDS@^2.1.0-0
+    - pack: ARM::SDS@^2.1.0
     - pack: AlifSemiconductor::Ensemble@^2.1.0-0
 
   # List different hardware targets that are used to deploy the solution.
@@ -37,7 +37,7 @@ solution:
             protocol: swd
             start-pname: M55_HP
           images:
-            - project-context: AlgorithmTest.ReleaseRec
+            - project-context: AlgorithmTest.DebugRec
 
   # List of different build configurations.
   build-types:

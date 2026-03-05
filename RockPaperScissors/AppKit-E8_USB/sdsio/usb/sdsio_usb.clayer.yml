@@ -3,7 +3,7 @@ layer:
   description: SDSIO layer for USB Device connection to Host
 
   packs:
-    - pack: ARM::SDS@^2.0.0-0
+    - pack: ARM::SDS@^2.1.0
     - pack: Keil::MDK-Middleware@^8.0.0
 
   connections:
