@@ -20,7 +20,9 @@ AI model selection, data labeling, and model creation for an Edge AI system base
 
 ## AI model development
 
-The diagram below shows the overall development of an AI model that is integrated into an embedded system. During AI model development, the [SDS framework](https://www.keil.arm.com/packs/sds-arm/overview/) is used as a workbench for data capture and system analysis. Once the optimized model delivers the expected performance, it can be integrated into the final application that may be based on FreeRTOS, Keil RTX, or Zephyr.
+The [Edge AI project RockPaperScissors](./Documentation/README.md) runs on an Alif AppKit-E8-AIML and uses the camera to capture pictures that are then classified.
+
+The diagram below shows the overall development process of an AI model that is integrated into an embedded system. During AI model development, the [SDS framework](https://www.keil.arm.com/packs/sds-arm/overview/) is used as a workbench for data capture and system analysis. Once the optimized model delivers the expected performance, it can be integrated into the final application that may be based on FreeRTOS, Keil RTX, or Zephyr.
 
 ![AI model development workflow](https://github.com/ARM-software/SDS-Framework/blob/main/overview/MLOps.png "AI model development workflow")
 
@@ -54,7 +56,23 @@ The [RockPaperScissors](./Documentation/README.md) project implements an AI mode
 ### ModelNova Fusion Studio
 
 1. Download and install [ModelNova Fusion Studio](https://modelnova.ai/fusion-studio-beta).
-2. ...
+2. Launch the application and login to the application using the PAT from the **Get it from here** button 
+
+    ![ModelNova Fusion Studio Launch Screen](./Documentation/image/login_screen.png "Login Screen")
+
+3. Click the **New Workspace** button.
+4. Choose to create any type of workspace (e.g., from scratch, starter pack, etc.).
+
+    ![New Workspace](./Documentation/image/Create_Workspace_1.png)
+
+5. Select the appropriate **Category** and **Domain** for your ML project.
+
+    ![New Workspace](./Documentation/image/Create_Workspace_2.png)
+
+6. Enter the workspace to begin your workflow.
+
+    While Fusion Studio supports multiple workspace creation methods (Scratch, Starter Pack, AI Assist), the **ML workflow remains identical for all workspaces**.
+
 
 ## Issues or Questions
 
