@@ -398,3 +398,39 @@ There are two possible target types for SDS data playback:
 - Target type `SSE-320-U85` runs on the Corstone-320 FVP simulation model and verifies the correctness of the operation. Simulation models are easy to deploy and do not require any hardware.
 
 - Target type `AppKit-E8-U85` runs on the Alif AppKit-E8 target hardware and uses pyOCD with a CMSIS-DAP unit for hardware-in-the-loop (HIL) testing. Besides correctness, timing can also be verified by capturing an RTT file for the SEGGER SystemView tool.
+
+### Test on `SSE-320-U85`
+
+The branch `simulator` in this repository contains the setup for the FVP simulation model. Select the target `SSE-320-U85` with build type `DebugPlay` and build the project for playback mode. Then run the FVP simulator using the Run action. This uses the file `ML_In.0.sds` to validate the algorithm.
+
+```bash
+*  Executing task: FVP_Corstone_SSE-320 -f Board/Corstone-320/fvp_config.txt -a out/AlgorithmTest/SSE-320-U85/DebugPlay/AlgorithmTest.axf  
+
+Ethos-U version info:
+        Arch:       v2.0.0
+        MACs/cc:    256
+        Cmd stream: v1
+SDS I/O VSI interface initialized successfully
+Model buffer loaded, has 1 methods
+Running method forward
+Setup Method allocator pool. Size: 1048576 bytes.
+Setting up planned buffer 0, size 752640
+Method 'forward' loaded.
+Model initialized. Ready for inference.
+97% idle
+99% idle
+SDS playback and recording (#0) started
+SDS playback and recording (#0) stopped
+====
+
+61% idle
+99% idle
+No more SDS data files for playback of input data!
+
+Info: /OSCI/SystemC: Simulation stopped by user.
+```
+
+This run generates the output file `ML_Out.0.sds`, which should be identical to `ML_Out.0.sds.ref` generated with the actual hardware target.
+
+> [!NOTE]
+> The simulation is a convenient, hardware-free way to validate correctness; it runs about a factor of 100 slower than real-time execution on hardware due to the detailed Ethos-U NPU modeling.
