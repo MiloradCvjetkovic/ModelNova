@@ -18,6 +18,7 @@ cbuild-pack:
         - ARM::CMSIS-RTX@^5.9.0
     - resolved-pack: ARM::SDS@2.1.0
       selected-by-pack:
+        - ARM::SDS@^2.0.0-0
         - ARM::SDS@^2.1.0
     - resolved-pack: ARM::SSE_320_BSP@1.1.0
       selected-by-pack:
