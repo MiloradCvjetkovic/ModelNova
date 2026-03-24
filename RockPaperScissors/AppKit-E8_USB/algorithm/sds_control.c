@@ -47,6 +47,15 @@ sdsError_t sdsError = { 0U, 0U, NULL, 0U };
 // SDS streams status
 volatile uint8_t sdsStreamingState = SDS_STREAMING_INACTIVE;
 
+#if defined(RTE_SDS_IO_CLIENT) || defined(RTE_SDS_IO_VSI)
+// SDS control/status flags
+volatile uint32_t sdsControlFlags = 0U;
+volatile uint32_t sdsStatusFlags  = 0U;
+
+// Data buffer for control data
+static uint8_t ctrl_data_buf[128];
+#endif
+
 // Idle time counter
 static volatile uint32_t idle_cnt;
 
@@ -124,6 +133,10 @@ __NO_RETURN void sdsControlThread (void *argument) {
   uint8_t led0_val = 0U;
   uint32_t no_load_cnt, prev_cnt;
   uint32_t interval_time, cnt = 0U;
+  uint32_t control_flags_set = 0U;
+  uint32_t control_flags_clear = 0U;
+  uint32_t control_flags_prev = 0U;
+  uint32_t status_flags_prev = 0U;
   int32_t ret;
 
   // Initialize idle counter
@@ -213,6 +226,53 @@ __NO_RETURN void sdsControlThread (void *argument) {
     keypress = btn_val & ~btn_prev;
     btn_prev = btn_val;
 
+#if defined(RTE_SDS_IO_CLIENT) || defined(RTE_SDS_IO_VSI)
+    // Poll Host for control flags update (sdsControlFlagsSet, sdsControlFlagsClear)
+    // Update sdsControlFlags variable setting the sdsControlFlagsSet flags and clearing the sdsControlFlagsClear flags
+    if (sdsRecPlayControlRead(ctrl_data_buf, 8U) == 8U) {
+      memcpy((uint32_t *)&control_flags_set,   &ctrl_data_buf[0], 4U);
+      memcpy((uint32_t *)&control_flags_clear, &ctrl_data_buf[4], 4U);
+      sdsControlFlags |=  control_flags_set;
+      sdsControlFlags &= ~control_flags_clear;
+    }
+
+    // If control flags changed (sdsControlFlags)
+    if (sdsControlFlags != control_flags_prev) {
+      // If activation of record/playback changed
+      if (((sdsControlFlags ^ control_flags_prev) & SDS_CONTROL_ACTIVE) != 0U) {
+        keypress  = vioBUTTON0;
+      }
+
+      control_flags_prev = sdsControlFlags;
+      printf("sdsControlFlags = 0x%08X\n", sdsControlFlags);
+    }
+
+    // If application status information changed send it to Host (sdsStatusFlags)
+    if (sdsStatusFlags != status_flags_prev) {
+      status_flags_prev = sdsStatusFlags;
+      if (sdsRecPlayControlWrite((uint32_t *)&sdsStatusFlags, 4U) == 4U) {
+        printf("sdsStatusFlags = 0x%08X\n", sdsStatusFlags);
+      }
+    }
+
+    // If error was registered by SDS_ASSERT send application status and error information to Host
+    if (sdsError.occurred != sdsError.reported) {
+      uint32_t ofs = 0U;
+      uint32_t len = 0U;
+      sdsError.reported = sdsError.occurred;
+      memcpy(ctrl_data_buf,       (uint32_t *)&sdsStatusFlags, sizeof(sdsStatusFlags)); ofs  = sizeof(sdsStatusFlags);
+      memcpy(ctrl_data_buf + ofs, &sdsError.line,              sizeof(sdsError.line));  ofs += sizeof(sdsError.line);
+      len = strlen(sdsError.file);
+      if (len > (sizeof(ctrl_data_buf) - ofs - 1U)) {
+        len = sizeof(ctrl_data_buf) - ofs - 1U;
+      }
+      memcpy(ctrl_data_buf + ofs, sdsError.file,               len);                    ofs += len;
+      sdsRecPlayControlWrite (ctrl_data_buf, ofs);
+      ctrl_data_buf[ofs] = 0;           // Terminate filename string for print
+      printf("sdsStatusFlags = 0x%08X; %s:%i: error: `SDS_ASSERT` failed\n", sdsStatusFlags, sdsError.file, sdsError.line);
+    }
+#endif
+
     // Handle command received over STDIN
     // 's' or 'S' emulate button press, thus start/stop the recording or playback
     switch (stdin_cmd) {
@@ -235,6 +295,9 @@ __NO_RETURN void sdsControlThread (void *argument) {
           // Turn LED1 on
           vioSetSignal(vioLED1, vioLEDon);
           sdsStreamingState = SDS_STREAMING_START;
+#if defined(RTE_SDS_IO_CLIENT) || defined(RTE_SDS_IO_VSI)
+          sdsStatusFlags |= SDS_STATUS_ACTIVE;
+#endif
         }
         break;
 
@@ -250,6 +313,9 @@ __NO_RETURN void sdsControlThread (void *argument) {
           // Turn LED1 off
           vioSetSignal(vioLED1, vioLEDoff);
           sdsStreamingState = SDS_STREAMING_INACTIVE;
+#if defined(RTE_SDS_IO_CLIENT) || defined(RTE_SDS_IO_VSI)
+          sdsStatusFlags &= ~SDS_STATUS_ACTIVE;
+#endif
         }
 #ifdef SDS_PLAY
 #ifdef SIMULATOR

@@ -187,6 +187,7 @@ int32_t CloseStreams (void) {
 // Algorithm Thread function
 __NO_RETURN void AlgorithmThread (void *argument) {
   uint32_t timestamp;
+  uint32_t control_flags = 0U;
   int32_t  retv;
   (void)argument;
 
@@ -197,6 +198,12 @@ __NO_RETURN void AlgorithmThread (void *argument) {
   InitAlgorithm();
 
   for (;;) {
+#if defined(RTE_SDS_IO_CLIENT) || defined(RTE_SDS_IO_VSI)
+    // Cache the current sdsControlFlags value in a local variable to ensure it remains
+    // consistent throughout a single loop iteration
+    control_flags = sdsControlFlags;
+#endif
+
     if (sdsStreamingState == SDS_STREAMING_START) {
       // Request to start streaming, transit to active state (synchronus to main loop)
       sdsStreamingState = SDS_STREAMING_ACTIVE;

@@ -20,14 +20,13 @@
 #define SDS_CONTROL_H_
 
 #include <stdint.h>
+#include "RTE_Components.h"
 #include "cmsis_compiler.h"
 
 #ifdef  __cplusplus
 extern "C"
 {
 #endif
-
-#include "sds_rec_play.h"
 
 // SDS streaming states
 #define SDS_STREAMING_INACTIVE    0     // Streaming is not active
@@ -36,6 +35,10 @@ extern "C"
 #define SDS_STREAMING_STOP        3     // Request to stop streaming and close the open streams
 #define SDS_STREAMING_STOP_SAFE   4     // Safe state for streaming to be stopped
 #define SDS_STREAMING_END         5     // Request to end streaming (no more data)
+
+// SDS control/status flags definitions
+#define SDS_CONTROL_ACTIVE        (1U << 31)    // Host controlled record/playback active
+#define SDS_STATUS_ACTIVE         (1U << 31)    // Device recording/playback active status
 
 // Assert macro
 #define SDS_ASSERT(cond)                \
@@ -58,6 +61,12 @@ extern sdsError_t sdsError;
 
 // SDS IO active status
 extern volatile uint8_t sdsStreamingState;
+
+#if defined(RTE_SDS_IO_CLIENT) || defined(RTE_SDS_IO_VSI)
+// SDS control/status flags
+extern volatile uint32_t sdsControlFlags;
+extern volatile uint32_t sdsStatusFlags;
+#endif
 
 // SDS control thread function
 extern __NO_RETURN void sdsControlThread (void *argument);
